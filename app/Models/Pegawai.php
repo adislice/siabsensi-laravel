@@ -12,6 +12,7 @@ class Pegawai extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
     
     protected $table = 'pegawai';
+    protected $primaryKey = 'id_pegawai';
     protected $fillable = ['id_pegawai', 'nama_pegawai', 'nip', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'alamat', 'id_jabatan', 'password'];
 
     public function jabatan() {

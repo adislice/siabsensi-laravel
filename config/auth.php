@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'pegawai',
+        ]
     ],
 
     /*
@@ -64,6 +68,11 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+
+        'pegawai' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Pegawai::class,
+        ]
 
         // 'users' => [
         //     'driver' => 'database',

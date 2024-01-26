@@ -12,7 +12,7 @@ class ApiCutiController extends Controller
 {
     public function index(Request $request)
     {
-        $id_pegawai = $request->id_pegawai;
+        $id_pegawai = auth()->user()->id_pegawai;
         $status = $request->status ?? '';
 
 
@@ -30,7 +30,6 @@ class ApiCutiController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'id_pegawai' => 'required',
                 'tanggal_mulai' => 'required',
                 'tanggal_selesai' => 'required',
                 'alasan' => 'required',
@@ -51,7 +50,7 @@ class ApiCutiController extends Controller
             Storage::disk('public')->put($file_path, file_get_contents($file));
 
             $data_cuti = [
-                'id_pegawai' => $request->id_pegawai,
+                'id_pegawai' => auth()->user()->id_pegawai,
                 'tanggal_mulai' => $request->tanggal_mulai,
                 'tanggal_selesai' => $request->tanggal_selesai,
                 'alasan' => $request->alasan,
@@ -66,6 +65,23 @@ class ApiCutiController extends Controller
                 'message' => 'Permohonan cuti berhasil diajukan'
             ]);
 
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ]);
+        }
+    }
+
+    public function show($id_cuti) {
+        try {
+            $cuti = Cuti::where('id_cuti', $id_cuti)->first();
+
+            return response()->json([
+                'success' => true,
+                'data' => $cuti
+            ]);
+            
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,

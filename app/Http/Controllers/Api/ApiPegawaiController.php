@@ -9,44 +9,19 @@ use Illuminate\Support\Facades\Validator;
 
 class ApiPegawaiController extends Controller
 {
-    public function loginPegawai(Request $request) {
+    public function show() {
         try {
-        $validator = Validator::make($request->all(), [
-            'nip' => 'required',
-            'password' => 'required'
-        ]);
+            $pegawai = Pegawai::where('id_pegawai', auth()->user()->id_pegawai)->first();
 
-        if ($validator->fails()) {
+            return response()->json([
+                'success' => true,
+                'data' => $pegawai
+            ]);
+        } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
-                'message' => $this->validation_error($validator->errors())
+                'message' => $th->getMessage()
             ]);
         }
-
-        $nip = $request->nip;
-        $password = $request->password;
-
-        $pegawai = Pegawai::where('nip', $nip)->first();
-        if (!$pegawai && !password_verify($password, $pegawai->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'NIP atau password salah. Silahkan coba kembali.'
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'pegawai' => $pegawai,
-                'auth_token' => $pegawai->createToken($pegawai->nip)->plainTextToken
-            ]
-        ]);
-
-    } catch (\Throwable $th) {
-        return response()->json([
-            'success' => false,
-            'message' => $th->getMessage()
-        ]);
-    }
     }
 }

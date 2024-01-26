@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ApiAbsensiController;
+use App\Http\Controllers\Api\ApiAuthController;
 use App\Http\Controllers\Api\ApiCutiController;
 use App\Http\Controllers\Api\ApiPegawaiController;
 use Illuminate\Http\Request;
@@ -17,14 +18,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('/validateToken', [ApiAuthController::class, 'validateToken']);
+    Route::get('/logout', [ApiAuthController::class, 'logout']);
+    Route::get('/absensi', [ApiAbsensiController::class, 'index']);
+    Route::post('/absensi-masuk', [ApiAbsensiController::class, 'absensiMasuk']);
+    Route::post('/absensi-pulang', [ApiAbsensiController::class, 'absensiPulang']);
+    Route::get('/cuti', [ApiCutiController::class, 'index']);
+    Route::get('/cuti/{id_cuti}', [ApiCutiController::class, 'show']);
+    Route::post('/cuti/add', [ApiCutiController::class, 'store']);
+    Route::get('/profil', [ApiPegawaiController::class, 'show']);
 });
 
-Route::get('/absensi', [ApiAbsensiController::class, 'index']);
-Route::post('/absensi-masuk', [ApiAbsensiController::class, 'absensiMasuk']);
-Route::post('/absensi-pulang', [ApiAbsensiController::class, 'absensiPulang']);
-Route::post('/login-pegawai', [ApiPegawaiController::class, 'loginPegawai']);
+Route::post('/login', [ApiAuthController::class, 'login']);
 
-Route::get('/cuti', [ApiCutiController::class, 'index']);
-Route::post('/cuti/add', [ApiCutiController::class, 'store']);
+

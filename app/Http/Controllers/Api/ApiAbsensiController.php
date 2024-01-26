@@ -11,7 +11,7 @@ class ApiAbsensiController extends Controller
 {
     public function index(Request $request)
     {
-        $id_pegawai = $request->id_pegawai;
+        $id_pegawai = auth()->user()->id_pegawai;
         $bulan = $request->bulan;
         $tahun = $request->tahun;
 
@@ -34,7 +34,7 @@ class ApiAbsensiController extends Controller
     public function absensiMasuk(Request $request)
     {
         try {
-            $id_pegawai = $request->id_pegawai;
+            $id_pegawai = auth()->user()->id_pegawai;
             $jam_masuk = Carbon::createFromTimeString($request->jam_masuk);
             $tanggal = $request->tanggal;
 
@@ -97,7 +97,7 @@ class ApiAbsensiController extends Controller
 
     public function absensiPulang(Request $request)
     {
-        $id_pegawai = $request->id_pegawai;
+        $id_pegawai = auth()->user()->id_pegawai;
         $jam_pulang = Carbon::createFromTimeString($request->jam_pulang);
         $tanggal = $request->tanggal;
 
