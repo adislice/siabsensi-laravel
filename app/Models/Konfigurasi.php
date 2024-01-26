@@ -18,6 +18,7 @@ class Konfigurasi extends Model
         'jam_masuk_sampai',
         'jam_pulang_dari',
         'jam_pulang_sampai',
+        'jam_max_terlambat',
         'is_absensi_aktif',
     ];
 

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->time('jam_masuk_sampai');
             $table->time('jam_pulang_dari');
             $table->time('jam_pulang_sampai');
+            $table->time('jam_max_terlambat');
             $table->boolean('is_absensi_aktif');
             $table->timestamps();
         });

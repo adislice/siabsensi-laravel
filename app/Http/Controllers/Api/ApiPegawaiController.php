@@ -27,24 +27,21 @@ class ApiPegawaiController extends Controller
         $password = $request->password;
 
         $pegawai = Pegawai::where('nip', $nip)->first();
-        if (!$pegawai) {
+        if (!$pegawai && !password_verify($password, $pegawai->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'NIP atau password salah. Silahkan coba kembali.'
             ]);
         }
 
-        if (password_verify($password, $pegawai->password)) {
-            return response()->json([
-                'success' => true,
-                'data' => $pegawai
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'NIP atau password salah. Silahkan coba kembali.'
-            ]);
-        }
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'pegawai' => $pegawai,
+                'auth_token' => $pegawai->createToken($pegawai->nip)->plainTextToken
+            ]
+        ]);
+
     } catch (\Throwable $th) {
         return response()->json([
             'success' => false,

@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
+        
+
         Jabatan::create([
             'nama_jabatan' => 'Frontend Developer',
         ]);
@@ -33,6 +35,16 @@ class DatabaseSeeder extends Seeder
             'nama_jabatan' => 'Backend Developer',
         ]);
         
+        Pegawai::create([
+            'nama_pegawai' => 'Rudy Zen',
+            'nip' => '1',
+            'jenis_kelamin' => 'laki-laki',
+            'tempat_lahir' => 'Jakarta',
+            'tanggal_lahir' => '2000-01-01',
+            'alamat' => 'Jl. Jend. Sudirman',
+            'id_jabatan' => 1,
+            'password' => bcrypt('password'),
+        ]);
 
         for ($i=0; $i < 10; $i++) { 
             Pegawai::create([
@@ -93,6 +105,7 @@ class DatabaseSeeder extends Seeder
             'jam_masuk_sampai' => '09:00:00',
             'jam_pulang_dari' => '16:00:00',
             'jam_pulang_sampai' => '17:00:00',
+            'jam_max_terlambat' => '10:00:00',
             'is_absensi_aktif' => true
         ]);
 
