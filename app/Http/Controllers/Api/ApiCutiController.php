@@ -20,6 +20,10 @@ class ApiCutiController extends Controller
             ->where('status', 'like', '%' . $status . '%')
             ->orderBy('id_cuti', 'desc')->get();
 
+        foreach ($data_cuti as $key => $value) {
+            $data_cuti[$key]->lampiran = url($value->lampiran);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $data_cuti
@@ -82,6 +86,75 @@ class ApiCutiController extends Controller
                 'data' => $cuti
             ]);
             
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ]);
+        }
+    }
+
+    public function update(Request $request, $id_cuti) {
+        try {
+            $validator = Validator::make($request->all(), [
+                'tanggal_mulai' => 'required',
+                'tanggal_selesai' => 'required',
+                'alasan' => 'required',
+                'lampiran_baru' => 'nullable'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $this->validation_error($validator->errors())
+                ]);
+            }
+
+            $cuti = Cuti::where('id_cuti', $id_cuti)->first();
+
+            $lampiran = $cuti->lampiran;
+            if ($request->hasFile('lampiran_baru')) {
+                $file = $request->file('lampiran_baru');
+                $directory = '/uploads/lampiran/';
+                $nama_file = $this->generateUid() . '.' . $file->getClientOriginalExtension();
+                $file_path = $directory . $nama_file;
+                Storage::disk('public')->put($file_path, file_get_contents($file));
+
+                // hapus file lama
+                Storage::disk('public')->delete($lampiran);
+
+                $lampiran = $file_path;
+            }
+
+            $cuti->update([
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+                'alasan' => $request->alasan,
+                'lampiran' => $lampiran
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Permohonan cuti berhasil diperbarui'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ]);
+        }
+    }
+
+    public function destroy($id_cuti) {
+        try {
+            $cuti = Cuti::where('id_cuti', $id_cuti)->first();
+            $cuti->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Permohonan cuti berhasil dihapus'
+            ]);
+
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,

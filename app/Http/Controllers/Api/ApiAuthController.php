@@ -52,7 +52,10 @@ class ApiAuthController extends Controller
 
     public function validateToken(Request $request)
     {
-        return auth()->user();
+        return response()->json([
+            'success' => true,
+            'data' => $request->user()
+        ]);
     }
 
     public function logout(Request $request) {

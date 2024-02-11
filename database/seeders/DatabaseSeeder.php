@@ -42,6 +42,8 @@ class DatabaseSeeder extends Seeder
             'tempat_lahir' => 'Jakarta',
             'tanggal_lahir' => '2000-01-01',
             'alamat' => 'Jl. Jend. Sudirman',
+            'status' => 'aktif',
+            'no_telp' => '08123456789',
             'id_jabatan' => 1,
             'password' => bcrypt('password'),
         ]);
@@ -54,6 +56,8 @@ class DatabaseSeeder extends Seeder
                 'tempat_lahir' => fake()->city(),
                 'tanggal_lahir' => fake()->date(),
                 'alamat' => fake()->address(),
+                'status' => fake()->randomElement(['aktif', 'nonaktif']),
+                'no_telp' => fake()->phoneNumber(),
                 'id_jabatan' => fake()->numberBetween(1, 2),
                 'password' => bcrypt('password'),
             ]);
@@ -107,6 +111,12 @@ class DatabaseSeeder extends Seeder
             'jam_pulang_sampai' => '17:00:00',
             'jam_max_terlambat' => '10:00:00',
             'is_absensi_aktif' => true
+        ]);
+
+        \App\Models\Admin::create([
+            'nama_admin' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('admin'),
         ]);
 
 

@@ -13,7 +13,19 @@ class Pegawai extends Authenticatable
     
     protected $table = 'pegawai';
     protected $primaryKey = 'id_pegawai';
-    protected $fillable = ['id_pegawai', 'nama_pegawai', 'nip', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'alamat', 'id_jabatan', 'password'];
+    protected $fillable = [
+        'id_pegawai', 
+        'nama_pegawai', 
+        'nip', 
+        'jenis_kelamin', 
+        'tempat_lahir', 
+        'tanggal_lahir', 
+        'alamat', 
+        'id_jabatan', 
+        'status',
+        'foto',
+        'password'
+    ];
 
     public function jabatan() {
         return $this->belongsTo(Jabatan::class, 'id_jabatan', 'id_jabatan');
@@ -25,5 +37,9 @@ class Pegawai extends Authenticatable
 
     public function cuti() {
         return $this->hasMany(Cuti::class, 'id_pegawai', 'id_pegawai');
+    }
+
+    public function izin() {
+        return $this->hasMany(Izin::class, 'id_pegawai', 'id_pegawai');
     }
 }

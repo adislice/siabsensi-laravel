@@ -38,7 +38,7 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'admin',
         ],
         'api' => [
             'driver' => 'sanctum',
@@ -64,9 +64,9 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'admin' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Models\Admin::class,
         ],
 
         'pegawai' => [
