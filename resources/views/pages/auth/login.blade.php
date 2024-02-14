@@ -22,7 +22,7 @@ background: linear-gradient(130deg, rgba(37,95,190,1) 0%, rgba(0,234,255,1) 100%
 
 <body>
 
-  <div class="row h-100">
+  <div class="d-flex flex-column h-100">
     <div class="col p-5 d-flex justify-content-center align-items-center text-white bg-grad">
       <div class="card p-5 rounded-3 shadow">
         <h4 class="text-center mb-4 fw-bold">Login</h4>

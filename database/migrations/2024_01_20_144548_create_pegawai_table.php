@@ -20,12 +20,12 @@ return new class extends Migration
             $table->date('tanggal_lahir');
             $table->string('alamat');
             $table->string('no_telp');
-            $table->integer('id_jabatan', false);
+            $table->integer('id_jabatan', false)->nullable();
             $table->string('foto')->nullable();
             $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->string('password');
             $table->timestamps();
-            $table->foreign('id_jabatan')->references('id_jabatan')->on('jabatan');
+            $table->foreign('id_jabatan')->references('id_jabatan')->on('jabatan')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

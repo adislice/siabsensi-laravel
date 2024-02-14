@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Utils\Constant;
 use App\Http\Controllers\Controller;
 use App\Models\Jabatan;
 use App\Models\Pegawai;
@@ -16,8 +17,10 @@ class PegawaiController extends Controller
      */
     public function index()
     {
-        $all_pegawai = Pegawai::all();
-        return view('pages.dashboard.pegawai.index', compact('all_pegawai'));
+        $all_pegawai = Pegawai::latest()->paginate(Constant::ITEM_PER_PAGE)->withQueryString();
+        return view('pages.dashboard.pegawai.index', [
+            'all_pegawai' => $all_pegawai
+        ]);
     }
 
     /**
@@ -26,7 +29,9 @@ class PegawaiController extends Controller
     public function create()
     {
         $data_jabatan = Jabatan::all();
-        return view('pages.dashboard.pegawai.create', compact('data_jabatan'));
+        return view('pages.dashboard.pegawai.create', [
+            'data_jabatan' => $data_jabatan
+        ]);
     }
 
     /**
@@ -50,11 +55,14 @@ class PegawaiController extends Controller
 
         try {
             if ($request->file('foto')) {
-                $file = $request->file('foto');
-                $directory = '/uploads/pegawai/';
-                $nama_file = $request->nip . '.' . $file->getClientOriginalExtension();
-                $file_path = $directory . $nama_file;
-                Storage::disk('public')->put($file_path, file_get_contents($file));
+                // $file = $request->file('foto');
+                // $directory = '/uploads/pegawai/';
+                // $nama_file = $request->nip . '.' . $file->getClientOriginalExtension();
+                // $file_path = $directory . $nama_file;
+                // Storage::disk('public')->put($file_path, file_get_contents($file));
+                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip, 'public');
+                // dd($path, url($path));
+            
             } else {
                 $file_path = null;
             }
@@ -74,10 +82,10 @@ class PegawaiController extends Controller
                 'foto' => $file_path
             ]);
 
-            return redirect()->route('pegawai.index')->with('toast-success', 'Data pegawai berhasil ditambahkan');
+            return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil ditambahkan');
 
         } catch (\Throwable $th) {
-            return redirect()->back()->with('alert-error', 'Data pegawai gagal ditambahkan')->withInput($request->all());
+            return redirect()->back()->with('error', "Data pegawai gagal ditambahkan\n".$th->getMessage())->withInput($request->all());
         }
 
         
@@ -88,7 +96,9 @@ class PegawaiController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $pegawai = Pegawai::findOrFail($id);
+
+        return view('pages.dashboard.pegawai.show', compact('pegawai'));
     }
 
     /**
@@ -107,7 +117,51 @@ class PegawaiController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'nama_pegawai' => 'required',
+            'nip' => 'required|unique:pegawai,nip,'.$id.',id_pegawai',
+            'jenis_kelamin' => 'required',
+            'tempat_lahir' => 'required',
+            'tanggal_lahir' => 'required',
+            'alamat' => 'required',
+            'no_telp' => 'required',
+            'id_jabatan' => 'required',
+            'foto' => 'nullable|image',
+            'status' => 'required',
+            'password' => ['nullable', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z-_\d]{6,}$/'],
+        ]);
+
+        try {
+            $pegawai = Pegawai::find($id);
+
+            $new_data = [
+                'nip' => $request->nip,
+                'nama_pegawai' => $request->nama_pegawai,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'alamat' => $request->alamat,
+                'no_telp' => $request->no_telp,
+                'id_jabatan' => $request->id_jabatan,
+            ];
+
+            if ($request->file('foto')) {
+                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip, 'public');
+                $new_data['foto'] = $file_path;
+            }
+
+            if($request->password) {
+                $new_password = bcrypt($request->password);
+                $new_data['password'] = $new_password;
+            }
+
+            $pegawai->update($new_data);
+
+            return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil diubah');
+                        
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Data pegawai gagal diubah');
+        }
     }
 
     /**
@@ -118,9 +172,9 @@ class PegawaiController extends Controller
         try {
             $pegawai = Pegawai::find($id);
             $pegawai->delete();
-            return redirect()->route('pegawai.index')->with('toast-success', 'Data pegawai berhasil dihapus');
+            return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil dihapus');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('toast-error', 'Data pegawai gagal dihapus');
+            return redirect()->back()->with('error', 'Data pegawai gagal dihapus');
         }
     }
 }

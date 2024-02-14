@@ -1,3 +1,4 @@
+
 <div class="d-flex sidebar-mobile overflow-x-hidden flex-shrink-0" id="sidebar-container" data-sidebar-state="expanded" style="widths: 18rem;">
     <!-- <button class="btn d-none rounded-pill fs-3" id="close_sidebar_mobile" onclick="toggleSidebar()"><i class="fas fa-fw fa-times-circle"></i></button> -->
   
@@ -19,8 +20,11 @@
           </a>
         </li>
 
+        @php
+            $master_expanded = (Request::is('dashboard/pegawai*') || Request::is('dashboard/jabatan*'));
+        @endphp
         <li class="nav-item">
-          <a class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 nav-expand {{ Request::is('dashboard/pegawai*') ? 'show bg-collapse' : ' collapsed' }}" data-bs-toggle="collapse" href="#master-data">
+          <a class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 nav-expand {{ $master_expanded ? 'show bg-collapse' : ' collapsed' }}" data-bs-toggle="collapse" href="#master-data">
             <i class='bx bx-data fs-4' ></i>
             <span class="nav-item-text">Master Data</span>
             <i data-lucide="chevron-down" class="expand-icon ms-auto" lucide-size="20"></i>
@@ -28,7 +32,7 @@
         </li>
         
   
-        <div class="collapse {{ Request::is('dashboard/pegawai*') ? 'show' : '' }}" id="master-data">
+        <div class="collapse {{ $master_expanded ? 'show' : '' }}" id="master-data">
           <div class="d-flex flex-column gap-1 py-1 border-top border-bottom">
             <li class="nav-item">
               <a href="{{ route('pegawai.index') }}" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('dashboard/pegawai*') ? 'active text-primary' : '' }}">
@@ -38,7 +42,7 @@
             </li>
   
             <li class="nav-item">
-              <a href="/admin/data-guru" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('admin/data-guru*') ? 'active' : '' }}">
+              <a href="{{ route('jabatan.index') }}" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('dashboard/jabatan*') ? 'active text-primary' : '' }}">
                 <i class='bx bx-shield fs-4'></i>
                 <span class="nav-item-text">Jabatan</span>
               </a>
@@ -63,6 +67,13 @@
           <a href="/admin/data-cuti" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('admin/data-cuti*') ? 'active' : '' }}">
             <i class='bx bx-file fs-4'></i>
             <span class="nav-item-text">Pengajuan Izin</span>
+          </a>
+        </li>
+        <hr>
+        <li>
+          <a href="/admin/konfigurasi" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('admin/data-cuti*') ? 'active' : '' }}">
+            <i class='bx bx-cog fs-4'></i>
+            <span class="nav-item-text">Konfigurasi</span>
           </a>
         </li>
   

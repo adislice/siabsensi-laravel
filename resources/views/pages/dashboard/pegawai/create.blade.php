@@ -4,8 +4,8 @@
 
 @section('content')
   <div class="d-flex mt-2 mb-3 align-items-center">
-    <a href="{{ route('pegawai.index') }}">
-      <i data-lucide="chevron-left" class="me-2" lucide-size="26"></i></a>
+    <a href="{{ route('pegawai.index') }}" class="d-inline-flex me-2 bg-hover rounded-pill p-1">
+      <i class='bx bx-left-arrow-alt fs-3'></i></a>
     <h4 class="mb-0">Tambah Pegawai</h4>
     <div class="ms-auto">
       <a href="{{ route('dashboard') }}">Home</a> /

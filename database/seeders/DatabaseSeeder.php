@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        for ($i=0; $i < 10; $i++) { 
+        for ($i=0; $i < 50; $i++) { 
             Pegawai::create([
                 'nama_pegawai' => fake()->name(),
                 'nip' => fake()->ean8(),

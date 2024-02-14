@@ -1,11 +1,11 @@
-@section('title', 'Tambah Pegawai')
+@section('title', 'Edit Pegawai')
 
 @extends('layouts.admin_layout')
 
 @section('content')
   <div class="d-flex mt-2 mb-3 align-items-center">
-    <a href="{{ route('pegawai.index') }}">
-      <i data-lucide="chevron-left" class="me-2" lucide-size="26"></i></a>
+    <a href="{{ route('pegawai.index') }}" class="d-inline-flex me-2 bg-hover rounded-pill p-1">
+      <i class='bx bx-left-arrow-alt fs-3'></i></a>
     <h4 class="mb-0">Edit Pegawai</h4>
     <div class="ms-auto">
       <a href="{{ route('dashboard') }}">Home</a> /
@@ -28,7 +28,7 @@
     </div>
     @endif
 
-    <form action="{{ route('pegawai.store') }}" method="post" class="d-flex flex-column" enctype="multipart/form-data">
+    <form action="{{ route('pegawai.update', $pegawai->id_pegawai) }}" method="post" class="d-flex flex-column" enctype="multipart/form-data">
       @csrf
       <div class="row">
         <div class="col-lg-6">
@@ -139,7 +139,7 @@
             <label for="form-password" class="form-label fw-medium required">Password</label>
             <div class="d-flex position-relative">
             <input type="password" class="form-control" id="form-password" name="password" placeholder="Masukkan password"
-              value="{{ old('password') }}" required>
+              value="{{ old('password') }}">
               <i class='bx bx-show fs-5 password-toggle'></i>
             </div>
             @error('password')

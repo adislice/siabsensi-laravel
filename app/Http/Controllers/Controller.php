@@ -33,4 +33,5 @@ class Controller extends BaseController
     function generateUid() {
         return bin2hex(random_bytes(10));
     }
+
 }

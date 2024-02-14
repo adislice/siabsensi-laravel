@@ -15,7 +15,7 @@
       <div class="col-12 col-md rounded-1 d-flex px-4 py-3 flex-row" style="background-color: #DCFCE7;">
         <div>
           <div class="fw-bold mb-2">Pegawai</div>
-          <h4 class="mb-0 lh-1 fw-bold">100</h4>
+          <h4 class="mb-0 lh-1 fw-bold">{{ $jml_pegawai }}</h4>
           <small>Pegawai terdaftar</small>
         </div>
         <div class="ms-auto text-success">
@@ -26,7 +26,7 @@
       <div class="col-12 col-md rounded-1 d-flex px-4 py-3 flex-row" style="background-color: #DBEAFE;">
         <div>
           <div class="fw-bold mb-2">Absensi</div>
-          <h4 class="mb-0 lh-1 fw-bold">70%</h4>
+          <h4 class="mb-0 lh-1 fw-bold">{{ $persentase_hadir }}%</h4>
           <small>Absensi hadir</small>
         </div>
         <div class="ms-auto text-primary">

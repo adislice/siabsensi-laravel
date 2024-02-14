@@ -306,3 +306,18 @@ hr {
     padding-top: .75rem!important;
     padding-bottom: .75rem!important;
 }
+
+.bg-hover:hover {
+    background: #e1e1e1!important;
+}
+
+hr {
+    margin: 1px 0!important;
+}
+
+.sticky-header-off   {
+    position: sticky;
+    top: 50px;
+    /* border-bottom: 1px solid red; */
+    background-color: whitesmoke!important;
+}
