@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -22,12 +23,28 @@ class Pegawai extends Authenticatable
         'tanggal_lahir', 
         'alamat', 
         'id_jabatan', 
+        'id_lokasi_absensi',
         'no_telp',
         'status',
         'foto',
         'password'
     ];
 
+    protected $appends = ['foto_url'];
+
+    //hide password
+    protected $hidden = [
+        'password',
+    ];
+
+    // accessor
+    public function fotoUrl(): Attribute {
+        return new Attribute(
+            get: fn() => $this->foto ? url($this->foto) : null
+        );
+    }
+
+    // relationship
     public function jabatan() {
         return $this->belongsTo(Jabatan::class, 'id_jabatan', 'id_jabatan');
     }
@@ -42,5 +59,9 @@ class Pegawai extends Authenticatable
 
     public function izin() {
         return $this->hasMany(Izin::class, 'id_pegawai', 'id_pegawai');
+    }
+
+    public function lokasi_absensi() {
+        return $this->belongsTo(LokasiAbsensi::class, 'id_lokasi_absensi', 'id_lokasi_absensi');
     }
 }

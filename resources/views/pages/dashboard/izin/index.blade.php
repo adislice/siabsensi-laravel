@@ -1,23 +1,23 @@
-@section('title', 'Jabatan')
+@section('title', 'Pengajuan Izin')
 
 @extends('layouts.admin_layout')
 
 @section('content')
   <div class="d-flex mt-2 mb-3 align-items-center">
-    <h4 class="mb-0">Jabatan</h4>
+    <h4 class="mb-0">Pengajuan Izin</h4>
     <div class="ms-auto">
       <a href="{{ route('dashboard') }}">Home</a> /
-      <span class="text-muted">Jabatan</span>
+      <span class="text-muted">Pengajuan Izin</span>
     </div>
   </div>
 
   <div class="p-3 bg-white rounded-3">
 
     <div class="d-flex flex-row align-items-start">
-      <a href="{{ route('jabatan.create') }}" class="btn btn-primary btn-icon">
+      {{-- <a href="{{ route('izin.create') }}" class="btn btn-primary btn-icon">
         <i class='bx bx-plus me-1'></i>
-        Tambah</a>
-      <form action="{{ route('jabatan.index') }}" method="get" class="ms-auto">
+        Tambah</a> --}}
+      <form action="{{ route('izin.index') }}" method="get" class="ms-auto">
         <div class="input-group" style="max-width: 20rem">
 
           <input type="text" class="form-control" placeholder="Cari...">
@@ -29,7 +29,7 @@
       </form>
     </div>
     <div class="mt-2 text-end">
-      Showing {{ $data_jabatan->firstItem() }} to {{ $data_jabatan->lastItem() }} of {{ $data_jabatan->total() }} data
+      Showing {{ $daftar_izin->firstItem() ?? 0 }} to {{ $daftar_izin->lastItem() ?? 0 }} of {{ $daftar_izin->total() }} data
     </div>
     <div class="table-responsive">
 
@@ -38,40 +38,57 @@
           <tr class="">
             <th scope="col" class="text-center">No.</th>
             <th scope="col" class="text-center" style="min-width: 200px">Nama</th>
-            <th scope="col" class="text-center">Tgl. Dibuat</th>
-            <th scope="col" class="text-center">Tgl. Diubah</th>
+            <th scope="col" class="text-center">Tanggal</th>
+            <th scope="col" class="text-center">Alasan</th>
+            <th scope="col" class="text-center">Status</th>
             <th scope="col" class="text-center">Aksi</th>
           </tr>
         </thead>
         <tbody class="align-middle">
-          @foreach ($data_jabatan as $key => $item)
+          @foreach ($daftar_izin as $key => $item)
             <tr>
-              <td class="text-center">{{ $data_jabatan->firstItem() + $key }}</td>
-              <td>{{ $item->nama_jabatan }}</td>
-              <td>{{ $item->created_at }}</td>
-              <td>{{ $item->updated_at }}</td>
+              <td class="text-center">{{ $daftar_izin->firstItem() + $key }}</td>
+              <td>{{ $item->pegawai->nama_pegawai }}</td>
+              <td>{{ $item->tanggal }}</td>
+              <td>{{ $item->alasan }}</td>
+              <td class="text-center">
+                @if ($item->status == 'pending')
+                  <span class="badge bg-warning rounded-pill">Pending</span>
+                @elseif ($item->status == 'disetujui')
+                  <span class="badge bg-success rounded-pill">Disetujui</span>
+                @elseif ($item->status == 'ditolak')
+                  <span class="badge bg-danger rounded-pill">Ditolak</span>
+                @else
+                  <span class="badge bg-secondary rounded-pill">Tidak Diketahui</span>
+                @endif
+              </td>
               <td class="text-nowrap">
-
-                <a href="{{ route('jabatan.edit', $item->id_jabatan) }}" class="btn btn-warning btn-icon"
-                  data-bs-tooltip="tooltip" data-bs-placement="top" data-bs-title="Edit Data">
-                  <i class="bx bx-edit fs-5"></i>
-                </a>
+                <a href="{{ route('izin.show', $item->id_izin) }}" class="btn btn-primary btn-icon"
+                    data-bs-tooltip="tooltip" data-bs-placement="top" data-bs-title="Lihat Data">
+                    <i class="bx bx-show fs-5"></i>
+                  </a>
                 <button type="button" class="btn btn-danger btn-icon" data-bs-toggle="modal"
                   data-bs-target="#deleteModal"
-                  onclick="setHapusModal('{{ route('jabatan.delete', $item->id_jabatan) }}')"
-                  title="Hapus Data #{{ $item->id_jabatan }}" data-bs-tooltip="tooltip" data-bs-placement="top"
+                  onclick="setHapusModal('{{ route('izin.delete', $item->id_izin) }}')"
+                  title="Hapus Data #{{ $item->id_izin }}" data-bs-tooltip="tooltip" data-bs-placement="top"
                   data-bs-title="Hapus Data">
                   <i class="bx bx-trash fs-5"></i>
                 </button>
             </tr>
           @endforeach
 
+          @if ($daftar_izin->count() == 0)
+            <tr>
+              <td colspan="6" class="text-center">Tidak ada data</td>
+            </tr>
+          @endif
+
         </tbody>
       </table>
     </div>
     <div>
       
-      {{ $data_jabatan->links() }}
+      {{ $daftar_izin->links() }}
     </div>
   </div>
 
@@ -84,13 +101,14 @@
         </div>
         <div class="modal-body">
           <div class="d-flex flex-column align-items-center">
-            <i class="fas fa-exclamation-triangle fs-1 text-warning mb-3"></i>
+            
+            <i class='bx bxs-error fs-1 text-warning mb-2'></i>
             <div class="text-center mb-2">Apakah Anda yakin akan menghapus data ini?</div>
             <div class="alert alert-danger" role="alert">
               <strong>Peringatan</strong>
               <ul class="mb-0">
                 <li>Data yang dihapus tidak dapat dikembalikan</li>
-                <li>Data pegawai yang memiliki jabatan ini akan menjadi null/tidak diketahui</li>
+                <li>Data pegawai yang memiliki pengajuan izin ini akan menjadi null/tidak diketahui</li>
               </ul>
             </div>
           </div>

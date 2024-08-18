@@ -9,7 +9,7 @@
   
       <div class="d-flex flex-column pt-4 px-3 align-items-center text-decoration-none">
         {{-- <img src="/logo.png" alt="Logo" style="width: 80px; height: 80px;"> --}}
-        <h5 class="text-center">CV Tirta Amerta</h5>
+        <h5 class="text-center fw-bold">Si<span class="text-primary">Absensi</span></h5>
       </div>
   
       <ul class="nav flex-column mb-auto h-100 flex-nowrap p-2 gap-1" style="min-width: 16rem">
@@ -21,13 +21,14 @@
         </li>
 
         @php
-            $master_expanded = (Request::is('dashboard/pegawai*') || Request::is('dashboard/jabatan*'));
+            $master_expanded = (Request::is('dashboard/pegawai*') || Request::is('dashboard/jabatan*')) || Request::is('dashboard/lokasi-absensi*');
         @endphp
         <li class="nav-item">
-          <a class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 nav-expand {{ $master_expanded ? 'show bg-collapse' : ' collapsed' }}" data-bs-toggle="collapse" href="#master-data">
+          <a class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 nav-expand {{ $master_expanded ? 'show' : ' collapsed' }}" data-bs-toggle="collapse" href="#master-data">
             <i class='bx bx-data fs-4' ></i>
             <span class="nav-item-text">Master Data</span>
-            <i data-lucide="chevron-down" class="expand-icon ms-auto" lucide-size="20"></i>
+            
+            <i class='bx bx-chevron-down expand-icon ms-auto'></i>
           </a>
         </li>
         
@@ -47,31 +48,37 @@
                 <span class="nav-item-text">Jabatan</span>
               </a>
             </li>
+
+            <li class="nav-item">
+              <a href="{{ route('lokasi_absensi.index') }}" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('dashboard/lokasi-absensi*') ? 'active text-primary' : '' }}">
+                <i class='bx bx-map fs-4'></i>
+                <span class="nav-item-text">Lokasi Absensi</span>
+              </a>
+            </li>
           </div>
         </div>
         <li>
-          <a href="/admin/data-absensi" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('admin/data-absensi*') ? 'active' : '' }}">
+          <a href="{{ route('absensi.index') }}" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('dashboard/absensi*') ? 'active text-primary' : '' }}">
             {{-- <i data-lucide="calendar-check" lucide-size="20"></i> --}}
             <i class='bx bx-calendar-check fs-4'></i>
             <span class="nav-item-text">Absensi</span>
           </a>
         </li>
         <li>
-          <a href="/admin/data-cuti" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('admin/data-cuti*') ? 'active' : '' }}">
-            {{-- <i data-lucide="calendar-range" lucide-size="20"></i> --}}
-            <i class='bx bx-notepad fs-4'></i>
-            <span class="nav-item-text">Pengajuan Cuti</span>
-          </a>
-        </li>
-        <li>
-          <a href="/admin/data-cuti" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('admin/data-cuti*') ? 'active' : '' }}">
+          <a href="{{ route('izin.index') }}" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('dashboard/izin*') ? 'active text-primary' : '' }}">
             <i class='bx bx-file fs-4'></i>
             <span class="nav-item-text">Pengajuan Izin</span>
           </a>
         </li>
+        <li>
+          <a href="{{ route('cuti.index') }}" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('dashboard/cuti*') ? 'active text-primary' : '' }}">
+            <i class='bx bx-calendar-star fs-4'></i>
+            <span class="nav-item-text">Pengajuan Cuti</span>
+          </a>
+        </li>
         <hr>
         <li>
-          <a href="/admin/konfigurasi" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('admin/data-cuti*') ? 'active' : '' }}">
+          <a href="{{ route('konfigurasi.index') }}" class="nav-link py-2.5 px-4 gap-3 d-flex align-items-center rounded-2 {{ Request::is('dashboard/konfigurasi*') ? 'active text-primary' : '' }}">
             <i class='bx bx-cog fs-4'></i>
             <span class="nav-item-text">Konfigurasi</span>
           </a>

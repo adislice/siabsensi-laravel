@@ -13,14 +13,10 @@ return new class extends Migration
     {
         Schema::create('konfigurasi', function (Blueprint $table) {
             $table->integer('id_konfigurasi', true);
-            $table->double('lokasi_absensi_latitude');
-            $table->double('lokasi_absensi_longitude');
-            $table->double('radius_absensi');
             $table->time('jam_masuk_dari');
             $table->time('jam_masuk_sampai');
             $table->time('jam_pulang_dari');
             $table->time('jam_pulang_sampai');
-            $table->time('jam_max_terlambat');
             $table->boolean('is_absensi_aktif');
             $table->timestamps();
         });

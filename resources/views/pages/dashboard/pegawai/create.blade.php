@@ -117,6 +117,7 @@
             <label for="no_telp" class="form-label fw-medium required">Nomor Telepon</label>
             <input type="number" step="any" class="form-control @error('no_telp') is-invalid @enderror"
               id="no_telp" name="no_telp" placeholder="Masukkan Nomor Telepon" required
+              min="0"
               value="{{ old('no_telp') }}">
             @error('no_telp')
               <small class="text-danger">{{ $message }}</small>
@@ -147,6 +148,19 @@
               <option value="nonaktif" {{ old('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
             </select>
             @error('status')
+              <small class="text-danger">{{ $message }}</small>
+            @enderror
+          </div>
+          <div class="mb-3">
+            <label for="id_lokasi_absensi" class="form-label fw-medium required">Lokasi Absensi</label>
+            <select class="form-select @error('id_lokasi_absensi') is-invalid @enderror" id="id_lokasi_absensi" name="id_lokasi_absensi">
+              <option value="" disabled>Pilih Lokasi Absensi</option>
+              @foreach ($data_lokasi_absensi as $item)
+                <option value="{{ $item->id_lokasi_absensi }}" {{ old('id_lokasi_absensi') == $item->id_lokasi_absensi ? 'selected' : '' }}>
+                  {{ $item->nama_lokasi }}</option>
+              @endforeach
+            </select>
+            @error('id_lokasi_absensi')
               <small class="text-danger">{{ $message }}</small>
             @enderror
           </div>

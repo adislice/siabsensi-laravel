@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::get('/validateToken', [ApiAuthController::class, 'validateToken']);
+    Route::post('/loginWithToken', [ApiAuthController::class, 'loginWithToken']);
     Route::get('/logout', [ApiAuthController::class, 'logout']);
     Route::get('/absensi', [ApiAbsensiController::class, 'index']);
     Route::get('/absensi/{id_absensi}', [ApiAbsensiController::class, 'show']);

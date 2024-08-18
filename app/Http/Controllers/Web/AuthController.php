@@ -9,6 +9,9 @@ class AuthController extends Controller
 {
     public function login()
     {
+        if (auth('web')->check()) {
+            return redirect()->route('dashboard');
+        }
         return view('pages.auth.login');
     }
 
@@ -26,6 +29,12 @@ class AuthController extends Controller
         } else {
             return redirect()->back()->with('error', 'Login failed');
         }
+    }
+
+    public function logout()
+    {
+        auth('web')->logout();
+        return redirect()->route('login');
     }
 
 }

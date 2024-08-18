@@ -15,14 +15,14 @@
 
     <div class="d-flex flex-row align-items-start">
       <a href="{{ route('pegawai.create') }}" class="btn btn-primary btn-icon">
-        <i data-lucide="plus" lucide-size="18"></i>
+        <i class='bx bx-plus me-1'></i>
         Tambah</a>
       <form action="{{ route('pegawai.index') }}" method="get" class="ms-auto">
         <div class="input-group" style="max-width: 20rem">
 
           <input type="text" class="form-control" placeholder="Cari...">
           <button type="submit" class="input-group-text">
-            <i data-lucide="search" lucide-size="18"></i>
+            <i class='bx bx-search-alt-2'></i>
           </button>
         </div>
 
@@ -65,7 +65,7 @@
                 <a href="{{ route('pegawai.show', $item->id_pegawai) }}" class="btn btn-primary btn-icon">
                   <i class="bx bx-show fs-5"></i>
                 </a>
-                <a href="{{ route('pegawai.edit', $item->id_pegawai) }}" class="btn btn-secondary btn-icon">
+                <a href="{{ route('pegawai.edit', $item->id_pegawai) }}" class="btn btn-warning btn-icon">
                   <i class="bx bx-edit fs-5"></i>
                 </a>
                 <button type="button" class="btn btn-danger btn-icon" data-bs-toggle="modal"

@@ -38,9 +38,6 @@ class ApiIzinController extends Controller
             $validator = Validator::make($request->all(), [
                 'tanggal' => 'required',
                 'alasan' => 'required',
-                'sepanjang_hari' => 'required|string|in:true,false',
-                'jam_mulai' => 'nullable',
-                'jam_selesai' => 'nullable'
             ]);
 
             if ($validator->fails()) {
@@ -49,20 +46,13 @@ class ApiIzinController extends Controller
                     'message' => $this->validation_error($validator->errors())
                 ]);
             }
-
-            $sepanjang_hari = $request->sepanjang_hari == 'true' ? 1 : 0;
+    
             $data_izin = [
                 'id_pegawai' => auth()->user()->id_pegawai,
                 'tanggal' => $request->tanggal,
                 'alasan' => $request->alasan,
-                'sepanjang_hari' => $sepanjang_hari,
                 'status' => 'pending'
             ];
-
-            if (!$sepanjang_hari) {
-                $data_izin['jam_mulai'] = $request->jam_mulai;
-                $data_izin['jam_selesai'] = $request->jam_selesai;
-            }
 
             Izin::create($data_izin);
 
@@ -89,10 +79,8 @@ class ApiIzinController extends Controller
         try {
 
             $validator = Validator::make($request->all(), [
+                'tanggal' => 'required',
                 'alasan' => 'required',
-                'sepanjang_hari' => 'required|string|in:true,false',
-                'jam_mulai' => 'nullable',
-                'jam_selesai' => 'nullable'
             ]);
 
             if ($validator->fails()) {
@@ -102,25 +90,17 @@ class ApiIzinController extends Controller
                 ]);
             }
 
-            $izin = Izin::where('id_izin', $id_izin)->first();
+            $izin = Izin::findOrFail($id_izin)->first();
 
-            $sepanjang_hari = $request->sepanjang_hari == 'true' ? 1 : 0;
-
-            $data_izin = [
-                'alasan' => $request->alasan,
-                'sepanjang_hari' => $sepanjang_hari,
-                'status' => 'pending'
-            ];
-
-            if (!$sepanjang_hari) {
-                $data_izin['jam_mulai'] = $request->jam_mulai;
-                $data_izin['jam_selesai'] = $request->jam_selesai;
-            } else {
-                $data_izin['jam_mulai'] = null;
-                $data_izin['jam_selesai'] = null;
+            if (!$izin->status == 'pending') {
+                throw new \Exception('Permohonan izin sudah disetujui atau ditolak');
             }
 
-            $izin->update($data_izin);
+            $izin->update([
+                'tanggal' => $request->tanggal,
+                'alasan' => $request->alasan,
+                'status' => 'pending'
+            ]);
 
             return response()->json([
                 'success' => true,

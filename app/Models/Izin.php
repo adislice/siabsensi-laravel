@@ -15,9 +15,6 @@ class Izin extends Model
         'id_pegawai',
         'tanggal',
         'alasan',
-        'sepanjang_hari',
-        'jam_mulai',
-        'jam_selesai',
         'alasan_ditolak',
         'status'
     ];

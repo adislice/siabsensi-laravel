@@ -19,7 +19,6 @@
     <div class="row">
         <div class="col-lg-6">
           <div class="mb-4">
-            
             <img src="{{ $pegawai->foto ? url($pegawai->foto) : '/user-avatar.jpg' }}" class="object-fit-cover " style="width:12rem;height:12rem;">
           </div>
           <div class="mb-4">

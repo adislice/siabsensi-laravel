@@ -16,6 +16,8 @@ class Authenticate extends Middleware
         if (! $request->expectsJson()) {
             session()->flash('alert', 'You must login first to access dashboard panel');
             return route('login');
+        } else {
+            return null;
         }
     }
 }

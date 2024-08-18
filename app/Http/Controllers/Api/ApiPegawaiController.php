@@ -11,7 +11,7 @@ class ApiPegawaiController extends Controller
 {
     public function show() {
         try {
-            $pegawai = Pegawai::where('id_pegawai', auth()->user()->id_pegawai)->first();
+            $pegawai = Pegawai::with(['jabatan', 'lokasi_absensi'])->where('id_pegawai', auth()->user()->id_pegawai)->first();
 
             return response()->json([
                 'success' => true,

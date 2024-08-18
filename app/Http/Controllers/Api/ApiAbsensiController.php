@@ -57,14 +57,11 @@ class ApiAbsensiController extends Controller
 
             $jam_masuk_dari = Carbon::createFromTimeString($this->getKonfigurasi('jam_masuk_dari'));
             $jam_masuk_sampai = Carbon::createFromTimeString($this->getKonfigurasi('jam_masuk_sampai'));
-            $jam_max_terlambat = Carbon::createFromTimeString($this->getKonfigurasi('jam_max_terlambat'));
 
             $data_absensi = [
                 'id_pegawai' => $id_pegawai,
                 'tanggal' => $tanggal,
                 'jam_masuk' => $request->jam_masuk,
-                'latitude_masuk' => $request->latitude_masuk,
-                'longitude_masuk' => $request->longitude_masuk,
             ];
 
             if ($jam_masuk->between($jam_masuk_dari, $jam_masuk_sampai)) {
@@ -73,18 +70,10 @@ class ApiAbsensiController extends Controller
                     'success' => true,
                     'message' => 'Absensi masuk berhasil'
                 ]);
-            } elseif ($jam_masuk->greaterThan($jam_masuk_sampai) && $jam_masuk->lessThan($jam_max_terlambat)) {
-                $terlambat_menit = $jam_masuk->diffInMinutes($jam_masuk_sampai);
-                $data_absensi['terlambat_menit'] = $terlambat_menit;
-                Absensi::create($data_absensi);
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Absensi masuk berhasil, terlambat ' . $terlambat_menit . ' menit'
-                ]);
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Bukan waktu absensi masuk. Absensi masuk dibuka pada ' . $jam_masuk_dari->format('H:i') . ' sampai ' . $jam_masuk_sampai->format('H:i') . ' dengan maksimal terlambat ' . $jam_max_terlambat->format('H:i')
+                    'message' => 'Bukan waktu absensi masuk. Absensi masuk dibuka pada ' . $jam_masuk_dari->format('H:i') . ' sampai ' . $jam_masuk_sampai->format('H:i'),
                 ]);
             }
         } catch (\Exception $e) {
@@ -125,8 +114,6 @@ class ApiAbsensiController extends Controller
                 ->whereDate('tanggal', $tanggal)
                 ->update([
                     'jam_pulang' => $request->jam_pulang,
-                    'latitude_pulang' => $request->latitude_pulang,
-                    'longitude_pulang' => $request->longitude_pulang,
                     'status' => 'hadir',
                 ]);
             return response()->json([

@@ -10,10 +10,10 @@
   {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"> --}}
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"> --}}
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
-    integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
+  {{-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" --}}
+    {{-- integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" /> --}}
   <!-- Boxicons -->
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <!-- Font -->
@@ -26,12 +26,15 @@
   <!-- My CSS -->
   <link rel="stylesheet" href="/css/main.css">
 
+
+  @stack('css')
+
 </head>
 
 <body>
   <!-- JQuery -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  {{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" --}}
+    {{-- integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script> --}}
 
   <script src="/js/jquery-3.7.1.min.js"></script>
 
@@ -51,8 +54,8 @@
         @if (session('success'))
           <div class="alert alert-success alert-dismissible fade show" role="alert">
             <div class="d-flex flex-row align-items-center">
-              <i class='bx bxs-check-circle me-1'></i>
-              {{ session('success') }}
+              <i class='bx bxs-check-circle me-1 fs-5'></i>
+              {!! session('success') !!}
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
@@ -61,8 +64,8 @@
         @if (session('error'))
           <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <div class="d-flex flex-row align-items-center">
-              <i class='bx bxs-error me-1'></i>
-              {{ session('error') }}
+              <i class='bx bxs-error me-1 fs-5'></i>
+              {!! session('error') !!}
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
@@ -124,20 +127,15 @@
   <!-- Bootstrap JS -->
   {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script> --}}
   <script src="/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  {{-- <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script> --}}
   <script src="/js/main.js"></script>
   <script>
-    lucide.createIcons();
-
-    $("[lucide-size]").each(function() {
-      $(this).css("height", $(this).attr("lucide-size") + "px");
-      $(this).css("width", $(this).attr("lucide-size") + "px");
-    })
-
     // initialize tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-tooltip]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  @stack('custom-scripts')
 </body>
 
 </html>

@@ -4,7 +4,7 @@ namespace App\Utils;
 
 class Constant
 {
-    public const ITEM_PER_PAGE = 10;
+    public const ITEM_PER_PAGE = 30;
     
 }
 

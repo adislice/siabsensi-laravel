@@ -6,6 +6,8 @@ namespace Database\Seeders;
 
 use App\Models\Absensi;
 use App\Models\Jabatan;
+use App\Models\JamKerja;
+use App\Models\LokasiAbsensi;
 use App\Models\Pegawai;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -25,7 +27,12 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        
+        LokasiAbsensi::create([
+            'nama_lokasi' => 'Kantor Simatupang',
+            'latitude' => '-6.9096320',
+            'longitude' => '109.6952180',
+            'radius' => 50.0,
+        ]);
 
         Jabatan::create([
             'nama_jabatan' => 'Frontend Developer',
@@ -45,6 +52,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'aktif',
             'no_telp' => '08123456789',
             'id_jabatan' => 1,
+            'id_lokasi_absensi' => 1,
             'password' => bcrypt('password'),
         ]);
 
@@ -57,15 +65,16 @@ class DatabaseSeeder extends Seeder
                 'tanggal_lahir' => fake()->date(),
                 'alamat' => fake()->address(),
                 'status' => fake()->randomElement(['aktif', 'nonaktif']),
-                'no_telp' => fake()->phoneNumber(),
+                'no_telp' => fake()->unique()->numerify('085########'),
                 'id_jabatan' => fake()->numberBetween(1, 2),
+                'id_lokasi_absensi' => 1,
                 'password' => bcrypt('password'),
             ]);
         }
 
-        $startOfMonth = Carbon::createFromFormat('F Y', 'December 2023')->firstOfMonth();
-        $today = Carbon::now()->subDays(2);
-        $carbonPeriod = CarbonPeriod::create("01-12-2023", $today->format('d-m-Y'));
+        $startOfMonth = Carbon::createFromFormat('F Y', 'January 2023')->firstOfMonth();
+        $today = Carbon::now()->subDays(1);
+        $carbonPeriod = CarbonPeriod::create("01-01-2024", $today->format('d-m-Y'));
 
         $tgl = 1;
         
@@ -76,16 +85,14 @@ class DatabaseSeeder extends Seeder
             }
             
             $id_pegawai = 1;
-            while ($id_pegawai <= 10) {
+            while ($id_pegawai <= 50) {
                 
                 $tanggal = $date->format('Y-m-d');
-                $status = fake()->randomElement(['cuti', 'hadir', 'alfa', 'izin']);
+                $status = fake()->randomElement(['cuti', 'hadir','hadir','hadir','hadir', 'alfa', 'izin']);
                 $data_absensi = [
                     'id_pegawai' => $id_pegawai,
                     'tanggal' => $tanggal,
                     'status' => $status,
-                    'latitude_masuk' => fake()->latitude(),
-                    'longitude_masuk' => fake()->longitude(),
                 ];
         
                 if ($status == "hadir") {
@@ -102,21 +109,17 @@ class DatabaseSeeder extends Seeder
         }
 
         \App\Models\Konfigurasi::create([
-            'lokasi_absensi_latitude' => '-6.9096320',
-            'lokasi_absensi_longitude' => '109.6952180',
-            'radius_absensi' => 50.0,
             'jam_masuk_dari' => '08:00:00',
             'jam_masuk_sampai' => '09:00:00',
             'jam_pulang_dari' => '16:00:00',
             'jam_pulang_sampai' => '17:00:00',
-            'jam_max_terlambat' => '10:00:00',
             'is_absensi_aktif' => true
         ]);
 
         \App\Models\Admin::create([
             'nama_admin' => 'Admin',
             'email' => 'admin@gmail.com',
-            'password' => bcrypt('admin'),
+            'password' => bcrypt('admin123'),
         ]);
 
 

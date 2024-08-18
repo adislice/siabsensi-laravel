@@ -27,19 +27,28 @@ class ApiAuthController extends Controller
             $nip = $request->nip;
             $password = $request->password;
 
-            $pegawai = Pegawai::where('nip', $nip)->first();
-            if (!$pegawai && !password_verify($password, $pegawai->password)) {
+            $pegawai = Pegawai::with(['jabatan', 'lokasi_absensi'])->where('nip', $nip)->first();
+            
+            if (!$pegawai || !password_verify($password, $pegawai->password)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'NIP atau password salah. Silahkan coba kembali.'
                 ]);
             }
 
+            $info_absensi = [
+                'jam_masuk_dari' => $this->getKonfigurasi('jam_masuk_dari'),
+                'jam_masuk_sampai' => $this->getKonfigurasi('jam_masuk_sampai'),
+                'jam_pulang_dari' => $this->getKonfigurasi('jam_pulang_dari'),
+                'jam_pulang_sampai' => $this->getKonfigurasi('jam_pulang_sampai')
+            ];
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'pegawai' => $pegawai,
-                    'auth_token' => $pegawai->createToken($pegawai->nip)->plainTextToken
+                    'auth_token' => $pegawai->createToken($pegawai->nip)->plainTextToken,
+                    'info_absensi' => $info_absensi
                 ]
             ]);
         } catch (\Throwable $th) {
@@ -50,12 +59,31 @@ class ApiAuthController extends Controller
         }
     }
 
-    public function validateToken(Request $request)
+    public function loginWithToken(Request $request)
     {
-        return response()->json([
-            'success' => true,
-            'data' => $request->user()
-        ]);
+        try {
+            $pegawai = Pegawai::with(['jabatan', 'lokasi_absensi'])->where('id_pegawai', auth()->user()->id_pegawai)->first();
+
+            $info_absensi = [
+                'jam_masuk_dari' => $this->getKonfigurasi('jam_masuk_dari'),
+                'jam_masuk_sampai' => $this->getKonfigurasi('jam_masuk_sampai'),
+                'jam_pulang_dari' => $this->getKonfigurasi('jam_pulang_dari'),
+                'jam_pulang_sampai' => $this->getKonfigurasi('jam_pulang_sampai')
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'pegawai' => $pegawai,
+                    'info_absensi' => $info_absensi
+                ]
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ]);
+        }
     }
 
     public function logout(Request $request) {

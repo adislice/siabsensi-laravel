@@ -16,9 +16,6 @@ return new class extends Migration
             $table->integer('id_pegawai');
             $table->date('tanggal');
             $table->string('alasan');
-            $table->boolean('sepanjang_hari');
-            $table->time('jam_mulai')->nullable();
-            $table->time('jam_selesai')->nullable();
             $table->string('alasan_ditolak')->nullable();
             $table->enum('status', ['pending', 'disetujui', 'ditolak'])->default('pending');
             $table->timestamps();

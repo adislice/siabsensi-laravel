@@ -15,18 +15,7 @@
     </div>
   </div>
   <div class="p-4 bg-white rounded-3">
-  
-    {{-- alert error --}}
-    @if(session('alert-error'))
-    <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert">
-      <i class='bx bxs-error flex-shrink-0 me-2'></i>
-      <div>
-        <strong>Error! </strong>
-      {{ session('alert-error') }}   
-      </div>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    @endif
+
 
     <form action="{{ route('pegawai.update', $pegawai->id_pegawai) }}" method="post" class="d-flex flex-column" enctype="multipart/form-data">
       @csrf
@@ -132,6 +121,20 @@
               <option value="nonaktif" {{ old('status', $pegawai->status) == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
             </select>
             @error('status')
+              <small class="text-danger">{{ $message }}</small>
+            @enderror
+          </div>
+          <div class="mb-3">
+            <label for="id_lokasi_absensi" class="form-label fw-medium required">Lokasi Absensi</label>
+            <select class="form-select @error('id_lokasi_absensi') is-invalid @enderror" id="id_lokasi_absensi" name="id_lokasi_absensi">
+              <option value="">Pilih Lokasi Absensi</option>
+              @foreach ($data_lokasi_absensi as $item)
+                <option value="{{ $item->id_lokasi_absensi }}" {{ old('id_lokasi_absensi', $pegawai->id_lokasi_absensi) == $item->id_lokasi_absensi ? 'selected' : '' }}>
+                  {{ $item->nama_lokasi }}
+                </option>
+              @endforeach
+            </select>
+            @error('id_lokasi_absensi')
               <small class="text-danger">{{ $message }}</small>
             @enderror
           </div>

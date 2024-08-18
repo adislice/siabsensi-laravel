@@ -17,12 +17,7 @@ return new class extends Migration
             $table->date('tanggal');
             $table->time('jam_masuk')->nullable();
             $table->time('jam_pulang')->nullable();
-            $table->double('latitude_masuk')->nullable();
-            $table->double('longitude_masuk')->nullable();
-            $table->double('latitude_pulang')->nullable();
-            $table->double('longitude_pulang')->nullable();
             $table->enum('status', ['hadir', 'alfa', 'cuti', 'izin'])->nullable();
-            $table->integer('terlambat_menit')->default(0);
             $table->timestamps();
             $table->foreign('id_pegawai')->references('id_pegawai')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
         });

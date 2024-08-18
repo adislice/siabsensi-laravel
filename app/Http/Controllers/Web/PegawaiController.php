@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Utils\Constant;
 use App\Http\Controllers\Controller;
 use App\Models\Jabatan;
+use App\Models\LokasiAbsensi;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -29,8 +30,10 @@ class PegawaiController extends Controller
     public function create()
     {
         $data_jabatan = Jabatan::all();
+        $data_lokasi_absensi = LokasiAbsensi::all();
         return view('pages.dashboard.pegawai.create', [
-            'data_jabatan' => $data_jabatan
+            'data_jabatan' => $data_jabatan,
+            'data_lokasi_absensi' => $data_lokasi_absensi
         ]);
     }
 
@@ -50,6 +53,7 @@ class PegawaiController extends Controller
             'id_jabatan' => 'required',
             'foto' => 'nullable|image',
             'status' => 'required',
+            'id_lokasi_absensi' => 'nullable',
             'password' => ['required', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z-_\d]{6,}$/'],
         ]);
 
@@ -60,7 +64,7 @@ class PegawaiController extends Controller
                 // $nama_file = $request->nip . '.' . $file->getClientOriginalExtension();
                 // $file_path = $directory . $nama_file;
                 // Storage::disk('public')->put($file_path, file_get_contents($file));
-                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip, 'public');
+                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip.'.'.$request->file('foto')->getClientOriginalExtension(), 'public');
                 // dd($path, url($path));
             
             } else {
@@ -79,6 +83,7 @@ class PegawaiController extends Controller
                 'no_telp' => $request->no_telp,
                 'id_jabatan' => $request->id_jabatan,
                 'password' => $new_password,
+                'id_lokasi_absensi' => $request->id_lokasi_absensi,
                 'foto' => $file_path
             ]);
 
@@ -108,8 +113,13 @@ class PegawaiController extends Controller
     {
         $pegawai = Pegawai::find($id);
         $data_jabatan = Jabatan::all();
+        $data_lokasi_absensi = LokasiAbsensi::all();
 
-        return view('pages.dashboard.pegawai.edit', compact('pegawai', 'data_jabatan'));
+        return view('pages.dashboard.pegawai.edit', [
+            'pegawai' => $pegawai,
+            'data_jabatan' => $data_jabatan,
+            'data_lokasi_absensi' => $data_lokasi_absensi,
+        ]);
     }
 
     /**
@@ -128,6 +138,7 @@ class PegawaiController extends Controller
             'id_jabatan' => 'required',
             'foto' => 'nullable|image',
             'status' => 'required',
+            'id_lokasi_absensi' => 'nullable',
             'password' => ['nullable', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z-_\d]{6,}$/'],
         ]);
 
@@ -143,10 +154,12 @@ class PegawaiController extends Controller
                 'alamat' => $request->alamat,
                 'no_telp' => $request->no_telp,
                 'id_jabatan' => $request->id_jabatan,
+                'status' => $request->status,
+                'id_lokasi_absensi' => $request->id_lokasi_absensi
             ];
 
             if ($request->file('foto')) {
-                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip, 'public');
+                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip.'.'.$request->file('foto')->getClientOriginalExtension(), 'public');
                 $new_data['foto'] = $file_path;
             }
 

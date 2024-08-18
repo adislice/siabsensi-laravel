@@ -9,9 +9,17 @@ class Absensi extends Model
 {
     use HasFactory;
     protected $table = 'absensi';
-    protected $fillable = ['id_pegawai', 'tanggal', 'jam_masuk', 'jam_pulang', 'latitude_masuk', 'longitude_masuk', 'latitude_pulang', 'longitude_pulang', 'status', 'terlambat_menit'];
+    protected $primaryKey = 'id_absensi';
+    protected $fillable = [
+        'id_pegawai',
+        'tanggal',
+        'jam_masuk', 
+        'jam_pulang', 
+        'status', 
+    ];
 
-    public function pegawai() {
+    public function pegawai()
+    {
         return $this->belongsTo(Pegawai::class, 'id_pegawai', 'id_pegawai');
     }
 }
