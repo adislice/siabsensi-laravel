@@ -59,6 +59,7 @@ Route::group(['middleware' => 'auth:web'], function () {
     Route::post('/dashboard/absensi/{id}/update', [AbsensiController::class, 'update'])->name('absensi.update');
     Route::delete('/dashboard/absensi/{id}/delete', [AbsensiController::class, 'destroy'])->name('absensi.delete');
     Route::post('/dashboard/absensi/{id}/update-status', [AbsensiController::class, 'updateStatus'])->name('absensi.update_status');
+    Route::get('/dashboard/absensi/export-excel', [AbsensiController::class, 'exportExcel'])->name('absensi.export_excel');
 
     Route::get('/dashboard/lokasi-absensi', [LokasiAbsensiController::class, 'index'])->name('lokasi_absensi.index');
     Route::get('/dashboard/lokasi-absensi/create', [LokasiAbsensiController::class, 'create'])->name('lokasi_absensi.create');

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Exports\AbsensiExport;
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
 use App\Models\Pegawai;
 use App\Utils\Constant;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AbsensiController extends Controller
 {
@@ -24,8 +26,6 @@ class AbsensiController extends Controller
         ->select('pegawai.id_pegawai AS id_pegawai', 'pegawai.nama_pegawai AS nama_pegawai', 'absensi.id_absensi AS id_absensi', 'absensi.tanggal', 'absensi.jam_masuk', 'absensi.jam_pulang', 'absensi.status')
         ->orderBy('pegawai.id_pegawai')
         ->paginate(Constant::ITEM_PER_PAGE);
-
-        // dd($data_absensi);
 
         return view('pages.dashboard.absensi.index', [
             'tanggal_dipilih' => $tanggal_dipilih,
@@ -132,5 +132,26 @@ class AbsensiController extends Controller
             'tanggal' => 'required',
             'status' => 'required'
         ]);
+    }
+
+    /**
+     * Export absensi data to Excel by date range.
+     */
+    public function exportExcel(Request $request)
+    {
+        $request->validate([
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+        ]);
+
+        $tanggalMulai = $request->tanggal_mulai;
+        $tanggalSelesai = $request->tanggal_selesai;
+
+        $filename = 'absensi_' . $tanggalMulai . '_sd_' . $tanggalSelesai . '.xlsx';
+
+        return Excel::download(
+            new AbsensiExport($tanggalMulai, $tanggalSelesai),
+            $filename
+        );
     }
 }

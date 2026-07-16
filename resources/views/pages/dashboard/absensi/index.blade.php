@@ -16,15 +16,19 @@
         <div class="align-self-center fw-medium fs-5">
           Data Absensi Tanggal {{ \Carbon\Carbon::parse($tanggal_dipilih)->translatedFormat('d F Y') }}
         </div>
-      <form action="{{ route('absensi.index') }}" method="get" class="ms-auto">
-        <div class="input-group" style="max-width: 20rem">
-          <input type="date" class="form-control" name="tanggal" value="{{ $tanggal_dipilih }}">
-          <button type="submit" class="input-group-text">
-            <i class='bx bx-search'></i>
-          </button>
-        </div>
-
-      </form>
+      <div class="ms-auto d-flex gap-2">
+        <button type="button" class="btn btn-success d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#exportModal">
+          <i class='bx bx-download fs-5'></i> Export Excel
+        </button>
+        <form action="{{ route('absensi.index') }}" method="get">
+          <div class="input-group" style="max-width: 20rem">
+            <input type="date" class="form-control" name="tanggal" value="{{ $tanggal_dipilih }}">
+            <button type="submit" class="input-group-text">
+              <i class='bx bx-search'></i>
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
     <div class="mt-2">
       Showing {{ $data_absensi->firstItem() }} to {{ $data_absensi->lastItem() }} of {{ $data_absensi->total() }} data
@@ -175,5 +179,38 @@
       $('#formHapusAction').attr('action', url);
     }
   </script>
+
+  {{-- Export Modal --}}
+  <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form action="{{ route('absensi.export_excel') }}" method="get">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exportModalLabel">
+              <i class='bx bx-download me-1'></i> Export Data Absensi
+            </h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-muted mb-3">Pilih rentang tanggal untuk mengekspor data absensi ke file Excel.</p>
+            <div class="mb-3">
+              <label for="tanggal_mulai" class="form-label fw-medium">Tanggal Mulai</label>
+              <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" required value="{{ date('Y-m-01') }}">
+            </div>
+            <div class="mb-3">
+              <label for="tanggal_selesai" class="form-label fw-medium">Tanggal Selesai</label>
+              <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" required value="{{ date('Y-m-d') }}">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-success d-flex align-items-center gap-1">
+              <i class='bx bx-download'></i> Export
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
 @endsection
