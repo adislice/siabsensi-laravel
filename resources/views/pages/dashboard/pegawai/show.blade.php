@@ -74,6 +74,11 @@
               
             </div>
           </div>
+          <div class="mb-4">
+            <a href="{{ route('absensi.index', ['nip' => $pegawai->nip]) }}" class="btn btn-primary d-inline-flex align-items-center gap-1">
+              <i class='bx bx-calendar-check fs-5'></i> Lihat Absensi
+            </a>
+          </div>
         </div>
       </div>
   </div>

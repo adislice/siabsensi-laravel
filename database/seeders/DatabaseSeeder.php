@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
         Jabatan::create([
             'nama_jabatan' => 'Backend Developer',
         ]);
-        
+
         Pegawai::create([
             'nama_pegawai' => 'Rudy Zen',
             'nip' => '1',
@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        for ($i=0; $i < 50; $i++) { 
+        for ($i = 0; $i < 50; $i++) {
             Pegawai::create([
                 'nama_pegawai' => fake()->name(),
                 'nip' => fake()->ean8(),
@@ -77,35 +77,34 @@ class DatabaseSeeder extends Seeder
         $carbonPeriod = CarbonPeriod::create("01-01-2024", $today->format('d-m-Y'));
 
         $tgl = 1;
-        
+
         foreach ($carbonPeriod as $date) {
             // $datee = Carbon::createFromFormat('d-m-Y', $tgl .'-12-2023');
-            if($date->isWeekend()) {
+            if ($date->isWeekend()) {
                 continue;
             }
-            
+
             $id_pegawai = 1;
             while ($id_pegawai <= 50) {
-                
+
                 $tanggal = $date->format('Y-m-d');
-                $status = fake()->randomElement(['cuti', 'hadir','hadir','hadir','hadir', 'alfa', 'izin']);
+                $status = fake()->randomElement(['hadir', 'hadir', 'hadir', 'hadir', 'alfa']);
                 $data_absensi = [
                     'id_pegawai' => $id_pegawai,
                     'tanggal' => $tanggal,
                     'status' => $status,
                 ];
-        
+
                 if ($status == "hadir") {
                     $data_absensi['jam_masuk'] = '09:00:00';
                     $data_absensi['jam_pulang'] = '17:00:00';
                 }
-    
+
                 Absensi::create($data_absensi);
 
                 $id_pegawai = $id_pegawai + 1;
             }
             $tgl++;
-            
         }
 
         \App\Models\Konfigurasi::create([
@@ -121,7 +120,5 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => bcrypt('admin123'),
         ]);
-
-
     }
 }

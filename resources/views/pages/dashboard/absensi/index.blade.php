@@ -21,6 +21,9 @@
           <i class='bx bx-download fs-5'></i> Export Excel
         </button>
         <form action="{{ route('absensi.index') }}" method="get">
+          @if($nip_filter)
+            <input type="hidden" name="nip" value="{{ $nip_filter }}">
+          @endif
           <div class="input-group" style="max-width: 20rem">
             <input type="date" class="form-control" name="tanggal" value="{{ $tanggal_dipilih }}">
             <button type="submit" class="input-group-text">
@@ -30,6 +33,17 @@
         </form>
       </div>
     </div>
+
+    @if($pegawai_filter)
+      <div class="mb-3">
+        <span class="badge bg-primary rounded-pill fs-6 fw-normal py-2 px-3">
+          <i class='bx bx-user me-1'></i> {{ $pegawai_filter->nama_pegawai }} ({{ $pegawai_filter->nip }})
+          <a href="{{ route('absensi.index', ['tanggal' => $tanggal_dipilih]) }}" class="text-white ms-2" title="Hapus filter">
+            <i class='bx bx-x'></i>
+          </a>
+        </span>
+      </div>
+    @endif
     <div class="mt-2">
       Showing {{ $data_absensi->firstItem() }} to {{ $data_absensi->lastItem() }} of {{ $data_absensi->total() }} data
     </div>

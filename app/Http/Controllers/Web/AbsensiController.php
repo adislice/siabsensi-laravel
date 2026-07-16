@@ -18,18 +18,30 @@ class AbsensiController extends Controller
     public function index(Request $request)
     {
         $tanggal_dipilih = $request->tanggal ?? date('Y-m-d');
-        // $data_absensi = Absensi::latest()->paginate(Constant::ITEM_PER_PAGE);
-        $data_absensi = Pegawai::leftJoin('absensi', function($join) use ($tanggal_dipilih) {
+        $nip = $request->nip;
+
+        $query = Pegawai::leftJoin('absensi', function($join) use ($tanggal_dipilih) {
             $join->on('pegawai.id_pegawai', '=', 'absensi.id_pegawai')
                  ->where('absensi.tanggal', '=', $tanggal_dipilih);
         })
-        ->select('pegawai.id_pegawai AS id_pegawai', 'pegawai.nama_pegawai AS nama_pegawai', 'absensi.id_absensi AS id_absensi', 'absensi.tanggal', 'absensi.jam_masuk', 'absensi.jam_pulang', 'absensi.status')
-        ->orderBy('pegawai.id_pegawai')
-        ->paginate(Constant::ITEM_PER_PAGE);
+        ->select('pegawai.id_pegawai AS id_pegawai', 'pegawai.nama_pegawai AS nama_pegawai', 'pegawai.nip', 'absensi.id_absensi AS id_absensi', 'absensi.tanggal', 'absensi.jam_masuk', 'absensi.jam_pulang', 'absensi.status')
+        ->orderBy('pegawai.id_pegawai');
+
+        // Filter by NIP if provided
+        if ($nip) {
+            $query->where('pegawai.nip', $nip);
+        }
+
+        $data_absensi = $query->paginate(Constant::ITEM_PER_PAGE);
+
+        // Get pegawai name for display when filtering by NIP
+        $pegawai_filter = $nip ? Pegawai::where('nip', $nip)->first() : null;
 
         return view('pages.dashboard.absensi.index', [
             'tanggal_dipilih' => $tanggal_dipilih,
-            'data_absensi' => $data_absensi
+            'data_absensi' => $data_absensi,
+            'nip_filter' => $nip,
+            'pegawai_filter' => $pegawai_filter,
         ]);
     }
 
