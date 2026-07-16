@@ -32,6 +32,7 @@ class AbsensiExport implements FromCollection, WithHeadings, WithMapping, WithSt
             ->whereBetween('absensi.tanggal', [$this->tanggalMulai, $this->tanggalSelesai])
             ->select(
                 'pegawai.nama_pegawai',
+                'pegawai.nip',
                 'absensi.tanggal',
                 'absensi.jam_masuk',
                 'absensi.jam_pulang',
@@ -50,6 +51,7 @@ class AbsensiExport implements FromCollection, WithHeadings, WithMapping, WithSt
         return [
             'No',
             'Nama Pegawai',
+            'NIP',
             'Tanggal',
             'Jam Masuk',
             'Jam Pulang',
@@ -75,6 +77,7 @@ class AbsensiExport implements FromCollection, WithHeadings, WithMapping, WithSt
         return [
             $this->rowNumber,
             $row->nama_pegawai,
+            $row->nip,
             \Carbon\Carbon::parse($row->tanggal)->format('d-m-Y'),
             $row->jam_masuk ?? '-',
             $row->jam_pulang ?? '-',
@@ -96,10 +99,19 @@ class AbsensiExport implements FromCollection, WithHeadings, WithMapping, WithSt
      */
     public function styles(Worksheet $sheet)
     {
-        // Auto-size columns
-        foreach (range('A', 'F') as $col) {
+        // Auto-size columns (A through G now with NIP column)
+        foreach (range('A', 'G') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
+
+        // Apply left alignment to all data cells
+        $lastRow = $sheet->getHighestRow();
+        $sheet->getStyle('A2:G' . $lastRow)->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+
+        // Force NIP column to text format so long numbers don't get scientific notation
+        $sheet->getStyle('C2:C' . $lastRow)->getNumberFormat()
+            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
 
         return [
             // Style the header row
