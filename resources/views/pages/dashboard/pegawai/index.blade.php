@@ -19,8 +19,7 @@
         Tambah</a>
       <form action="{{ route('pegawai.index') }}" method="get" class="ms-auto">
         <div class="input-group" style="max-width: 20rem">
-
-          <input type="text" class="form-control" placeholder="Cari...">
+          <input type="text" class="form-control" placeholder="Cari..." name="search" value="{{ request('search') }}">
           <button type="submit" class="input-group-text">
             <i class='bx bx-search-alt-2'></i>
           </button>

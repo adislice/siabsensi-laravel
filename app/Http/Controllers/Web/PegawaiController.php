@@ -16,9 +16,15 @@ class PegawaiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $all_pegawai = Pegawai::latest()->paginate(Constant::ITEM_PER_PAGE)->withQueryString();
+        $search = $request->query('search');
+        $all_pegawai = Pegawai::when($search, function ($query, $search) {
+            return $query->where('nama_pegawai', 'like', '%' . $search . '%');
+        })
+            ->latest()
+            ->paginate(Constant::ITEM_PER_PAGE)
+            ->withQueryString();
         return view('pages.dashboard.pegawai.index', [
             'all_pegawai' => $all_pegawai
         ]);
@@ -64,9 +70,9 @@ class PegawaiController extends Controller
                 // $nama_file = $request->nip . '.' . $file->getClientOriginalExtension();
                 // $file_path = $directory . $nama_file;
                 // Storage::disk('public')->put($file_path, file_get_contents($file));
-                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip.'.'.$request->file('foto')->getClientOriginalExtension(), 'public');
+                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip . '.' . $request->file('foto')->getClientOriginalExtension(), 'public');
                 // dd($path, url($path));
-            
+
             } else {
                 $file_path = null;
             }
@@ -88,12 +94,9 @@ class PegawaiController extends Controller
             ]);
 
             return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil ditambahkan');
-
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', "Data pegawai gagal ditambahkan\n".$th->getMessage())->withInput($request->all());
+            return redirect()->back()->with('error', "Data pegawai gagal ditambahkan\n" . $th->getMessage())->withInput($request->all());
         }
-
-        
     }
 
     /**
@@ -129,7 +132,7 @@ class PegawaiController extends Controller
     {
         $request->validate([
             'nama_pegawai' => 'required',
-            'nip' => 'required|unique:pegawai,nip,'.$id.',id_pegawai',
+            'nip' => 'required|unique:pegawai,nip,' . $id . ',id_pegawai',
             'jenis_kelamin' => 'required',
             'tempat_lahir' => 'required',
             'tanggal_lahir' => 'required',
@@ -159,11 +162,11 @@ class PegawaiController extends Controller
             ];
 
             if ($request->file('foto')) {
-                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip.'.'.$request->file('foto')->getClientOriginalExtension(), 'public');
+                $file_path = $request->file('foto')->storeAs('uploads/pegawai', $request->nip . '.' . $request->file('foto')->getClientOriginalExtension(), 'public');
                 $new_data['foto'] = $file_path;
             }
 
-            if($request->password) {
+            if ($request->password) {
                 $new_password = bcrypt($request->password);
                 $new_data['password'] = $new_password;
             }
@@ -171,7 +174,6 @@ class PegawaiController extends Controller
             $pegawai->update($new_data);
 
             return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil diubah');
-                        
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Data pegawai gagal diubah');
         }
