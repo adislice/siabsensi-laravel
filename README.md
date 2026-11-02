@@ -1,70 +1,341 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SiAbsensi
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+SiAbsensi adalah sistem informasi absensi pegawai berbasis Laravel. Repositori ini berisi dua bagian utama:
 
-## Validasi Lokasi Absensi (API)
+- **Dashboard admin** untuk mengelola data pegawai, jabatan, lokasi absensi, absensi harian, pengajuan izin/cuti, dan konfigurasi jam absensi.
+- **REST API pegawai** untuk aplikasi mobile, meliputi login, profil, absensi masuk/pulang, riwayat absensi, serta pengajuan izin dan cuti.
 
-Endpoint `POST /api/absensi-masuk` dan `POST /api/absensi-pulang` memvalidasi koordinat GPS pegawai terhadap master Lokasi Absensi. Radius disimpan dalam meter. Detail field, contoh request/respons, dan catatan integrasi aplikasi mobile ada di [docs/validasi-lokasi-absensi.md](docs/validasi-lokasi-absensi.md).
+Aplikasi mobile pegawai dikembangkan terpisah dan menggunakan API dari repositori ini.
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Dashboard admin
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Ringkasan dan statistik**: jumlah pegawai, persentase kehadiran, jumlah cuti dan izin, serta grafik kehadiran bulan berjalan untuk hari kerja.
+- **Master pegawai**: tambah, lihat, ubah, dan hapus data pegawai, termasuk foto, jabatan, lokasi absensi, status aktif/nonaktif, serta pencarian berdasarkan nama.
+- **Master jabatan**: pengelolaan data jabatan yang dipakai oleh pegawai.
+- **Lokasi absensi**: pengelolaan lokasi dengan koordinat latitude/longitude dan radius dalam meter. Peta memakai Leaflet dengan tile OpenStreetMap.
+- **Data absensi per tanggal**: daftar seluruh pegawai pada tanggal yang dipilih, filter berdasarkan NIP, serta penambahan atau perubahan status **hadir**, **alfa**, **izin**, dan **cuti**.
+- **Export Excel**: unduh data absensi berdasarkan rentang tanggal. Kolom yang diekspor: No, Nama Pegawai, NIP, Tanggal, Jam Masuk, Jam Pulang, dan Status.
+- **Persetujuan izin**: daftar dan detail pengajuan izin, serta persetujuan atau penolakan. Izin yang disetujui otomatis dicatat sebagai absensi berstatus `izin` pada tanggal terkait.
+- **Persetujuan cuti**: daftar dan detail pengajuan cuti, persetujuan dengan lampiran persetujuan, atau penolakan dengan alasan. Cuti yang disetujui otomatis dicatat sebagai absensi berstatus `cuti` untuk tanggal-tanggal dalam rentang cuti.
+- **Konfigurasi jam absensi**: pengaturan jam masuk, jam pulang, dan status aktif/nonaktif absensi.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### API pegawai
 
-## Learning Laravel
+- **Login** memakai NIP dan password, menghasilkan token Sanctum.
+- **Profil pegawai** beserta jabatan dan lokasi absensi.
+- **Absensi masuk dan pulang** dengan validasi jam absensi, pencegahan absensi ganda, dan validasi geofence.
+- **Riwayat absensi** per bulan dan tahun.
+- **Pengajuan izin** serta daftar riwayat izin.
+- **Pengajuan cuti** dengan lampiran, daftar riwayat, detail, perubahan, dan penghapusan pengajuan.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Geofence
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Endpoint `POST /api/absensi-masuk` dan `POST /api/absensi-pulang` mewajibkan field `latitude` dan `longitude`. Koordinat pegawai divalidasi terhadap **lokasi absensi milik pegawai** (`pegawai.id_lokasi_absensi`), memakai titik pusat dan radius (meter) dari master lokasi tersebut. Jarak dihitung dengan rumus Haversine.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Validasi lokasi dijalankan sebelum pengecekan jam absensi dan status absensi. Detail field, contoh request/respons, dan catatan integrasi mobile tersedia di [docs/validasi-lokasi-absensi.md](docs/validasi-lokasi-absensi.md).
 
-## Laravel Sponsors
+## Peran Pengguna
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Peran | Kredensial | Guard | Akses |
+| --- | --- | --- | --- |
+| Admin | Email dan password | `web` (session) | Dashboard admin |
+| Pegawai | NIP dan password | `api` (Sanctum Bearer token) | REST API pegawai |
 
-### Premium Partners
+Admin tidak memiliki fitur registrasi mandiri. Akun admin dibuat melalui seeder atau data awal database. Pegawai juga tidak mendaftar sendiri; akunnya dibuat oleh admin melalui dashboard.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Teknologi
 
-## Contributing
+- **Laravel 10** (`laravel/framework ^10.10`) dengan **PHP >= 8.1**
+- **MySQL** atau **MariaDB**
+- **Blade** dan **Livewire 3** untuk dashboard admin
+- **Laravel Sanctum 3** untuk autentikasi API
+- **Maatwebsite Excel 3** untuk export data absensi
+- **Leaflet** dengan tile **OpenStreetMap** untuk peta lokasi absensi
+- **Vite 5** dan npm untuk aset frontend
+- Bootstrap 5 dan Chart.js untuk tampilan dashboard
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Kebutuhan Sistem
 
-## Code of Conduct
+- PHP **8.1 atau lebih baru**
+- Composer **2**
+- Node.js **18 atau lebih baru** dan npm
+- MySQL atau MariaDB
+- Web server (Apache/Nginx) atau `php artisan serve` untuk pengembangan
+- Ekstensi PHP umum untuk Laravel (antara lain `openssl`, `pdo`, `mbstring`, `tokenizer`, `xml`, `ctype`, `json`, dan `fileinfo`). Untuk export Excel, pastikan ekstensi `zip` dan `gd` aktif.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Instalasi
 
-## Security Vulnerabilities
+1. Clone repositori dan masuk ke direktori proyek.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   ```bash
+   git clone <url-repositori> siabsensi-laravel
+   cd siabsensi-laravel
+   ```
+
+2. Pasang dependensi PHP dan buat file environment.
+
+   ```bash
+   composer install
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+   Di Windows, gunakan `copy .env.example .env`.
+
+3. Siapkan database MySQL/MariaDB, lalu sesuaikan konfigurasi di `.env`.
+
+   ```dotenv
+   APP_URL=http://localhost:8000
+
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=db_sistemabsensi
+   DB_USERNAME=<user-database>
+   DB_PASSWORD=<password-database>
+   ```
+
+   Contoh membuat database:
+
+   ```sql
+   CREATE DATABASE db_sistemabsensi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+
+4. Jalankan migrasi dan seeder.
+
+   ```bash
+   php artisan migrate --seed
+   ```
+
+5. Buat symbolic link storage agar foto pegawai dan lampiran dapat diakses.
+
+   ```bash
+   php artisan storage:link
+   ```
+
+6. Pasang dependensi frontend dan jalankan Vite.
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+   Untuk build produksi, gunakan `npm run build`.
+
+7. Jalankan server pengembangan di terminal terpisah.
+
+   ```bash
+   php artisan serve
+   ```
+
+   Dashboard dapat dibuka di `http://localhost:8000`.
+
+## Akun dari Seeder
+
+| Akun | Kredensial | Keterangan |
+| --- | --- | --- |
+| Admin | `admin@gmail.com` / `admin123` | Login dashboard admin |
+| Pegawai contoh | NIP `1` / `password` | Login API pegawai |
+| 50 pegawai dummy | NIP acak / `password` | Data contoh untuk pengujian |
+| Lokasi contoh | Kantor Simatupang | Latitude `-6.9096320`, longitude `109.6952180`, radius `50` meter |
+
+Seeder juga membuat dua jabatan contoh (Frontend Developer dan Backend Developer) serta riwayat absensi untuk 50 pegawai pertama sejak 1 Januari 2024 sampai kemarin. Karena jumlah datanya cukup banyak, proses seeding dapat memakan waktu.
+
+> **Peringatan:** `admin123` dan `password` adalah kredensial demo. Segera ganti password setelah instalasi dan jangan pernah memakai kredensial default di lingkungan produksi.
+
+Catatan: seeder mengisi atribut `nama_admin` pada `Admin::create`, sedangkan `$fillable` model `Admin` memakai `nama_user`. Pada MySQL dengan mode strict, `php artisan migrate --seed` dapat berhenti saat membuat akun admin. Jika itu terjadi, samakan nama atribut dengan kolom tabel `admin`, lalu jalankan ulang seeder.
+
+## Struktur Proyek
+
+```text
+app/
+├── Exports/
+│   └── AbsensiExport.php          # Export absensi ke Excel
+├── Http/Controllers/
+│   ├── Api/                       # Controller REST API pegawai
+│   └── Web/                       # Controller dashboard admin
+├── Livewire/
+│   └── LoginForm.php              # Form login admin
+├── Models/                        # Admin, Pegawai, Jabatan, Absensi,
+│                                  # Izin, Cuti, LokasiAbsensi, Konfigurasi
+├── Services/
+│   └── AttendanceGeofenceService.php  # Perhitungan Haversine dan validasi radius
+└── Utils/                         # Konstanta dan helper
+
+database/
+├── migrations/                    # Skema tabel
+└── seeders/DatabaseSeeder.php     # Data awal dan akun demo
+
+docs/
+└── validasi-lokasi-absensi.md     # Dokumentasi teknis geofence
+
+resources/views/
+├── layouts/                       # Layout dashboard
+├── livewire/                      # Komponen Livewire
+├── pages/auth/                    # Halaman login
+├── pages/dashboard/               # Halaman dashboard admin
+└── partials/                      # Sidebar dan navbar
+
+routes/
+├── api.php                        # Endpoint API pegawai
+└── web.php                        # Route dashboard admin
+
+tests/
+├── Feature/
+└── Unit/AttendanceGeofenceServiceTest.php
+```
+
+## Endpoint API
+
+Base URL pengembangan: `http://localhost:8000/api`.
+
+Semua endpoint selain login memerlukan header berikut:
+
+```http
+Authorization: Bearer <token>
+Accept: application/json
+```
+
+Token diperoleh dari `POST /api/login` dan disimpan di tabel `personal_access_tokens`.
+
+| Method | Endpoint | Autentikasi | Keterangan |
+| --- | --- | --- | --- |
+| POST | `/api/login` | Tidak | Login dengan `nip` dan `password`; mengembalikan token Sanctum |
+| POST | `/api/loginWithToken` | Bearer token | Mengambil data pegawai dan info jam absensi dengan token aktif |
+| GET | `/api/logout` | Bearer token | Menghapus seluruh token milik pegawai |
+| GET | `/api/profil` | Bearer token | Profil pegawai beserta jabatan dan lokasi absensi |
+| GET | `/api/absensi?bulan=&tahun=` | Bearer token | Riwayat absensi; tanpa parameter memakai bulan dan tahun berjalan |
+| POST | `/api/absensi-masuk` | Bearer token | Absen masuk; wajib mengirim koordinat |
+| POST | `/api/absensi-pulang` | Bearer token | Absen pulang; wajib mengirim koordinat |
+| GET | `/api/izin?status=` | Bearer token | Daftar izin pegawai, filter status opsional |
+| POST | `/api/izin/add` | Bearer token | Ajukan izin |
+| POST | `/api/izin/{id}/update` | Bearer token | Ubah pengajuan izin |
+| POST | `/api/izin/{id}/delete` | Bearer token | Hapus pengajuan izin |
+| GET | `/api/cuti?status=` | Bearer token | Daftar cuti pegawai beserta URL lampiran |
+| GET | `/api/cuti/{id}` | Bearer token | Detail pengajuan cuti |
+| POST | `/api/cuti/add` | Bearer token | Ajukan cuti dengan lampiran (multipart/form-data) |
+| POST | `/api/cuti/{id}/update` | Bearer token | Ubah pengajuan cuti; lampiran baru opsional |
+| POST | `/api/cuti/{id}/delete` | Bearer token | Hapus pengajuan cuti |
+
+Catatan: logout pada `routes/api.php` memakai method **GET**, bukan POST.
+
+Field utama yang dikirim:
+
+- **Login**: `nip`, `password`
+- **Absensi masuk**: `tanggal`, `jam_masuk`, `latitude`, `longitude`
+- **Absensi pulang**: `tanggal`, `jam_pulang`, `latitude`, `longitude`
+- **Izin**: `tanggal`, `alasan`
+- **Cuti**: `tanggal_mulai`, `tanggal_selesai`, `alasan`, `lampiran` (file)
+
+Semua respons API memakai format JSON dengan properti `success`. Error validasi dan error bisnis dikembalikan dengan HTTP 200 dan `success: false`, disertai `message`.
+
+### Contoh Login
+
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nip": "1",
+    "password": "password"
+  }'
+```
+
+Contoh respons (disederhanakan):
+
+```json
+{
+  "success": true,
+  "data": {
+    "pegawai": {
+      "id_pegawai": 1,
+      "nip": "1",
+      "nama_pegawai": "Rudy Zen"
+    },
+    "auth_token": "<token>",
+    "info_absensi": {
+      "jam_masuk_dari": "08:00:00",
+      "jam_masuk_sampai": "09:00:00",
+      "jam_pulang_dari": "16:00:00",
+      "jam_pulang_sampai": "17:00:00"
+    }
+  }
+}
+```
+
+Gunakan token tersebut untuk endpoint lain:
+
+```bash
+curl http://localhost:8000/api/profil \
+  -H "Authorization: Bearer <token>" \
+  -H "Accept: application/json"
+```
+
+### Contoh Absensi Masuk
+
+```bash
+curl -X POST http://localhost:8000/api/absensi-masuk \
+  -H "Authorization: Bearer <token>" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tanggal": "2026-11-02",
+    "jam_masuk": "07:45",
+    "latitude": -6.9096320,
+    "longitude": 109.6952180
+  }'
+```
+
+## Geofence dan Validasi Lokasi
+
+- `latitude` dan `longitude` **wajib** dikirim di body request absensi masuk dan pulang, bukan di query string.
+- Latitude harus numerik antara `-90` sampai `90`; longitude antara `-180` sampai `180`.
+- Titik pusat dan radius diambil dari master **Lokasi Absensi** yang terhubung ke pegawai melalui `id_lokasi_absensi`.
+- Radius disimpan dalam **meter**. Jarak dihitung dengan rumus Haversine; titik yang tepat berada di batas radius tetap diterima.
+- Jika pegawai belum memiliki lokasi absensi atau data lokasinya tidak valid, absensi ditolak.
+- Jika koordinat berada di luar radius, respons menyertakan `data.distance` dan `data.radius` dalam meter.
+
+Contoh respons di luar radius:
+
+```json
+{
+  "success": false,
+  "message": "Lokasi Anda berada di luar radius absensi. Jarak Anda 150 meter dari Kantor Simatupang, sedangkan radius yang diizinkan 50 meter.",
+  "data": {
+    "distance": 150.0,
+    "radius": 50.0
+  }
+}
+```
+
+Dokumentasi lengkap, termasuk urutan validasi dan contoh respons lain, ada di [docs/validasi-lokasi-absensi.md](docs/validasi-lokasi-absensi.md).
+
+## Testing
+
+Jalankan seluruh test:
+
+```bash
+php artisan test
+```
+
+Jalankan test khusus layanan geofence:
+
+```bash
+php artisan test --filter=AttendanceGeofenceServiceTest
+```
+
+Test geofence mencakup jarak titik yang sama, perhitungan Haversine pada titik referensi, lokasi di dalam radius, lokasi di luar radius, lokasi tepat di batas radius, dan pegawai tanpa lokasi absensi.
+
+## Catatan dan Batasan
+
+- Repositori ini hanya berisi **backend dan dashboard admin**. Aplikasi mobile pegawai berada di repositori terpisah.
+- Aplikasi mobile lama yang belum mengirim `latitude` dan `longitude` akan ditolak oleh endpoint absensi. Aplikasi harus diperbarui agar selalu mengirim koordinat GPS perangkat.
+- Validasi geofence hanya memeriksa koordinat yang dikirim klien. Manipulasi atau spoofing GPS di perangkat **belum** ditangani oleh backend.
+- Panduan integrasi geofence untuk aplikasi mobile: [docs/validasi-lokasi-absensi.md](docs/validasi-lokasi-absensi.md).
+- Dashboard admin memakai session guard `web`, sedangkan API pegawai memakai Sanctum guard `api`. Keduanya memakai tabel pengguna yang berbeda.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Dirilis dengan lisensi **MIT**.
