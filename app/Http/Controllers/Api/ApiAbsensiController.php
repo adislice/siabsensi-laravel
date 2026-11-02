@@ -4,11 +4,21 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
+use App\Models\Pegawai;
+use App\Services\AttendanceGeofenceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class ApiAbsensiController extends Controller
 {
+    private AttendanceGeofenceService $geofenceService;
+
+    public function __construct(AttendanceGeofenceService $geofenceService)
+    {
+        $this->geofenceService = $geofenceService;
+    }
+
     public function index(Request $request)
     {
         $id_pegawai = auth()->user()->id_pegawai;
@@ -34,6 +44,11 @@ class ApiAbsensiController extends Controller
     public function absensiMasuk(Request $request)
     {
         try {
+            $lokasi_error = $this->validasiLokasiAbsensi($request);
+            if ($lokasi_error) {
+                return $lokasi_error;
+            }
+
             $id_pegawai = auth()->user()->id_pegawai;
             $jam_masuk = Carbon::createFromTimeString($request->jam_masuk);
             $tanggal = $request->tanggal;
@@ -86,6 +101,11 @@ class ApiAbsensiController extends Controller
 
     public function absensiPulang(Request $request)
     {
+        $lokasi_error = $this->validasiLokasiAbsensi($request);
+        if ($lokasi_error) {
+            return $lokasi_error;
+        }
+
         $id_pegawai = auth()->user()->id_pegawai;
         $jam_pulang = Carbon::createFromTimeString($request->jam_pulang);
         $tanggal = $request->tanggal;
@@ -126,5 +146,62 @@ class ApiAbsensiController extends Controller
                 'message' => 'Bukan waktu absensi pulang. Absensi pulang dibuka pada ' . $jam_pulang_dari->format('H:i') . ' sampai ' . $jam_pulang_sampai->format('H:i')
             ]);
         }
+    }
+
+    /**
+     * Validasi field koordinat dan radius lokasi pegawai.
+     *
+     * @return \Illuminate\Http\JsonResponse|null
+     */
+    private function validasiLokasiAbsensi(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ], [
+            'latitude.required' => 'Koordinat latitude wajib dikirim.',
+            'latitude.numeric' => 'Koordinat latitude harus berupa angka.',
+            'latitude.between' => 'Koordinat latitude harus berada di antara -90 dan 90.',
+            'longitude.required' => 'Koordinat longitude wajib dikirim.',
+            'longitude.numeric' => 'Koordinat longitude harus berupa angka.',
+            'longitude.between' => 'Koordinat longitude harus berada di antara -180 dan 180.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $this->validation_error($validator->errors()),
+            ]);
+        }
+
+        $pegawai = Pegawai::with('lokasi_absensi')
+            ->where('id_pegawai', auth()->user()->id_pegawai)
+            ->first();
+
+        if (!$pegawai) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data pegawai tidak ditemukan.',
+            ]);
+        }
+
+        $hasil = $this->geofenceService->validasiLokasiPegawai(
+            $pegawai,
+            (float) $request->latitude,
+            (float) $request->longitude
+        );
+
+        if (!$hasil['valid']) {
+            return response()->json([
+                'success' => false,
+                'message' => $hasil['message'],
+                'data' => [
+                    'distance' => $hasil['distance'],
+                    'radius' => $hasil['radius'],
+                ],
+            ]);
+        }
+
+        return null;
     }
 }

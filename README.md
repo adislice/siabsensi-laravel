@@ -7,6 +7,10 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Validasi Lokasi Absensi (API)
+
+Endpoint `POST /api/absensi-masuk` dan `POST /api/absensi-pulang` memvalidasi koordinat GPS pegawai terhadap master Lokasi Absensi. Radius disimpan dalam meter. Detail field, contoh request/respons, dan catatan integrasi aplikasi mobile ada di [docs/validasi-lokasi-absensi.md](docs/validasi-lokasi-absensi.md).
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
